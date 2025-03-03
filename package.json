@@ -1,0 +1,45 @@
+{
+  "name": "@orbitdb/simple-encryption",
+  "version": "0.0.1",
+  "description": "A simple password encryption module that encrypts data using AES-GCM PBKDF2.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "standard --env=mocha",
+    "lint:fix": "standard --fix",
+    "test": "mocha"
+  },
+  "author": "OrbitDB",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/orbitdb/simple-encryption.git"
+  },
+  "keywords": [
+    "orbitdb",
+    "orbit",
+    "p2p",
+    "decentralized",
+    "encryption"
+  ],
+  "bugs": {
+    "url": "https://github.com/orbitdb/simple-encryption/issues"
+  },
+  "homepage": "https://github.com/orbitdb/simple-encryption#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@chainsafe/libp2p-gossipsub": "^14.1.0",
+    "@multiformats/multiaddr-matcher": "^1.6.0",
+    "@orbitdb/core": "file:../orbitdb",
+    "blockstore-level": "^2.0.1",
+    "helia": "^5.2.1",
+    "mocha": "^11.1.0",
+    "rimraf": "^6.0.1",
+    "standard": "^17.1.2"
+  },
+  "dependencies": {
+    "multiformats": "^13.3.2"
+  }
+}
