@@ -63,4 +63,4 @@ If you want to code but don't know where to start, check out the issues labelled
 
 ## License
 
-[MIT](LICENSE) Haja Networks Oy, OrbitDB Community
+[MIT](LICENSE) OrbitDB Community
