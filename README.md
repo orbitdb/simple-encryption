@@ -8,6 +8,8 @@
 
 A simple password encryption module that encrypts data using AES-GCM PBKDF2.
 
+**NOTE** This encryption module is not audited in any way for security and is intended for demonstration purposes only.
+
 ## Install
 
 This project uses [npm](http://npmjs.com/) and [nodejs](https://nodejs.org/).
@@ -22,7 +24,7 @@ To implement encryption within your database, create an encryption object and pa
 
 ```js
 import { createOrbitDB } from '@orbitdb/core'
-import { SimpleEncryption } from '@orbitdb/simple-encryption' 
+import { SimpleEncryption } from '@orbitdb/simple-encryption'
 
 
 // Instantiate encryption for either data, replication or both.
