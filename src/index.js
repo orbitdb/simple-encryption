@@ -5,10 +5,8 @@
 
 import { AES } from './aes-gcm-pbkdf2.js'
 
-const SimpleEncryption = async ({ password, aesOptions }) => {
-  aesOptions = aesOptions || {}
-
-  const aes = AES(aesOptions)
+const SimpleEncryption = async ({ password }) => {
+  const aes = AES()
 
   const encrypt = (value) => {
     return aes.encrypt(value, password)

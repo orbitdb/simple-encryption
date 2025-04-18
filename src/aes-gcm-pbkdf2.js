@@ -35,13 +35,13 @@ export const derivedEmptyPasswordKey = { alg: 'A128GCM', ext: true, k: 'scm9jmO_
 
 // Based off of code from https://github.com/luke-park/SecureCompatibleEncryptionExamples
 
-export function AES (opts) {
-  const algorithm = opts?.algorithm ?? 'AES-GCM'
-  let keyLength = opts?.keyLength ?? 16
-  const nonceLength = opts?.nonceLength ?? 12
-  const digest = opts?.digest ?? 'SHA-256'
-  const saltLength = opts?.saltLength ?? 16
-  const iterations = opts?.iterations ?? 32767
+export function AES () {
+  const algorithm = 'AES-GCM'
+  let keyLength = 16
+  const nonceLength = 12
+  const digest = 'SHA-256'
+  const saltLength = 16
+  const iterations = 32767
   // const crypto = webcrypto.get();
   const crypto = getCrypto()
   keyLength *= 8 // Browser crypto uses bits instead of bytes
