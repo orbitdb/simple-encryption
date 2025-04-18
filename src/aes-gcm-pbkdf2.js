@@ -51,7 +51,8 @@ export function AES () {
      */
   async function encrypt (data, password) {
     const salt = crypto.getRandomValues(new Uint8Array(saltLength))
-    const nonce = crypto.getRandomValues(new Uint8Array(nonceLength))
+    // const nonce = crypto.getRandomValues(new Uint8Array(nonceLength))
+    const nonce = new Uint8Array(nonceLength)
     const aesGcm = { name: algorithm, iv: nonce }
     if (typeof password === 'string') {
       password = fromString(password)

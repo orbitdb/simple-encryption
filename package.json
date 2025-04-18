@@ -29,6 +29,11 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "standard": {
+    "env": [
+      "mocha"
+    ]
+  },  
   "devDependencies": {
     "@chainsafe/libp2p-gossipsub": "^14.1.0",
     "@multiformats/multiaddr-matcher": "^1.6.0",
