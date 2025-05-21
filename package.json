@@ -35,16 +35,16 @@
     ]
   },  
   "devDependencies": {
-    "@chainsafe/libp2p-gossipsub": "^14.1.0",
-    "@multiformats/multiaddr-matcher": "^1.6.0",
+    "@chainsafe/libp2p-gossipsub": "^14.1.1",
+    "@multiformats/multiaddr-matcher": "^1.7.2",
     "@orbitdb/core": "github:orbitdb/orbitdb#feat/encryption",
     "blockstore-level": "^2.0.1",
-    "helia": "^5.2.1",
-    "mocha": "^11.1.0",
+    "helia": "^5.4.1",
+    "mocha": "^11.4.0",
     "rimraf": "^6.0.1",
     "standard": "^17.1.2"
   },
   "dependencies": {
-    "multiformats": "^13.3.2"
+    "multiformats": "^13.3.6"
   }
 }
