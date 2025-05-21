@@ -3,10 +3,15 @@ import SimpleEncryption from '../src/index.js'
 
 describe('Simple Encryption', function () {
   describe('Interface', function () {
-    it('encrypts and decrypts a string', async function () {
+    it('has encrypt and decrypt functions', async function () {
       const encryption = await SimpleEncryption({ password: 'hello' })
       strictEqual(encryption.encrypt != null, true)
       strictEqual(encryption.decrypt != null, true)
+    })
+
+    it('has ivInterval property', async function () {
+      const encryption = await SimpleEncryption({ password: 'hello' })
+      strictEqual(encryption.ivInterval != null, true)
     })
   })
 
@@ -49,6 +54,30 @@ describe('Simple Encryption', function () {
       strictEqual(err.message, 'Data to encrypt must be a TypedArray')
     })
 
+    it('throws an error if data to be encrypted is null', async function () {
+      let err
+      try {
+        const encryption = await SimpleEncryption({ password: 'hello' })
+        await encryption.encrypt(null)
+      } catch (e) {
+        err = e
+      }
+      notEqual(err, undefined)
+      strictEqual(err.message, 'Data to encrypt must be a TypedArray')
+    })
+
+    it('throws an error if data to be encrypted is undefined', async function () {
+      let err
+      try {
+        const encryption = await SimpleEncryption({ password: 'hello' })
+        await encryption.encrypt()
+      } catch (e) {
+        err = e
+      }
+      notEqual(err, undefined)
+      strictEqual(err.message, 'Data to encrypt must be a TypedArray')
+    })
+
     it('throws an error if data to be decrypted is not a TypedArray', async function () {
       const encoded = 123
 
@@ -62,12 +91,44 @@ describe('Simple Encryption', function () {
       notEqual(err, undefined)
       strictEqual(err.message, 'Data to decrypt must be a TypedArray')
     })
+
+    it('throws an error if data to be decrypted is null', async function () {
+      let err
+      try {
+        const encryption = await SimpleEncryption({ password: 'hello' })
+        await encryption.decrypt(null)
+      } catch (e) {
+        err = e
+      }
+      notEqual(err, undefined)
+      strictEqual(err.message, 'Data to decrypt must be a TypedArray')
+    })
+
+    it('throws an error if data to be decrypted is undefined', async function () {
+      let err
+      try {
+        const encryption = await SimpleEncryption({ password: 'hello' })
+        await encryption.decrypt(undefined)
+      } catch (e) {
+        err = e
+      }
+      notEqual(err, undefined)
+      strictEqual(err.message, 'Data to decrypt must be a TypedArray')
+    })
   })
-  
+
   describe('Encryption password', function () {
     it('can be a string', async function () {
       const encoded = new TextEncoder().encode('some text')
       const encryption = await SimpleEncryption({ password: 'hello' })
+      const encrypted = await encryption.encrypt(encoded)
+      const decrypted = await encryption.decrypt(encrypted)
+      deepStrictEqual(decrypted, encoded)
+    })
+
+    it('can be an empty string', async function () {
+      const encoded = new TextEncoder().encode('some text')
+      const encryption = await SimpleEncryption({ password: '' })
       const encrypted = await encryption.encrypt(encoded)
       const decrypted = await encryption.decrypt(encrypted)
       deepStrictEqual(decrypted, encoded)
@@ -81,17 +142,12 @@ describe('Simple Encryption', function () {
       deepStrictEqual(decrypted, encoded)
     })
 
-    it('can\'t be an empty string', async function () {
+    it('can be an empty TypedArray', async function () {
       const encoded = new TextEncoder().encode('some text')
-      let err
-      try {
-        const encryption = await SimpleEncryption({ password: '' })
-        await encryption.encrypt(encoded)
-      } catch (e) {
-        err = e
-      }
-      notEqual(err, undefined)
-      strictEqual(err.message, 'password must be a String or a TypedArray')
+      const encryption = await SimpleEncryption({ password: Uint8Array.from([]) })
+      const encrypted = await encryption.encrypt(encoded)
+      const decrypted = await encryption.decrypt(encrypted)
+      deepStrictEqual(decrypted, encoded)
     })
 
     it('can\'t be a number', async function () {
@@ -159,7 +215,7 @@ describe('Simple Encryption', function () {
       strictEqual(err.message, 'password must be a String or a TypedArray')
     })
 
-    it('can\'t be is null', async function () {
+    it('can\'t be null', async function () {
       const encoded = new TextEncoder().encode('some text')
       let err
       try {

@@ -45,73 +45,90 @@ export function AES () {
   // const crypto = webcrypto.get();
   const crypto = getCrypto()
   keyLength *= 8 // Browser crypto uses bits instead of bytes
-  /**
-     * Uses the provided password to derive a pbkdf2 key. The key
-     * will then be used to encrypt the data.
-     */
-  async function encrypt (data, password) {
-    const salt = crypto.getRandomValues(new Uint8Array(saltLength))
-    const nonce = crypto.getRandomValues(new Uint8Array(nonceLength))
-    const aesGcm = { name: algorithm, iv: nonce }
-    if (typeof password === 'string') {
-      password = fromString(password)
-    }
-    let cryptoKey
+
+  const ivInterval = 32000 // NIST recommends max 2^32
+
+  let salt
+  let nonce
+  let aesGcm
+
+  let encryptionKey
+  let decryptionKey
+  let decryptionNonce
+
+  const deriveEncryptionKey = async (password) => {
+    salt = crypto.getRandomValues(new Uint8Array(saltLength))
+    nonce = crypto.getRandomValues(new Uint8Array(nonceLength))
+    aesGcm = { name: algorithm, iv: nonce }
+
+    return await deriveKey('encrypt', password, salt)
+  }
+
+  const deriveDecryptionKey = async (password, salt) => {
+    return await deriveKey('decrypt', password, salt)
+  }
+
+  const deriveKey = async (type, password, salt) => {
     if (password.length === 0) {
-      cryptoKey = await crypto.subtle.importKey('jwk', derivedEmptyPasswordKey, { name: 'AES-GCM' }, true, ['encrypt'])
       try {
         const deriveParams = { name: 'PBKDF2', salt, iterations, hash: { name: digest } }
         const runtimeDerivedEmptyPassword = await crypto.subtle.importKey('raw', password, { name: 'PBKDF2' }, false, ['deriveKey'])
-        cryptoKey = await crypto.subtle.deriveKey(deriveParams, runtimeDerivedEmptyPassword, { name: algorithm, length: keyLength }, true, ['encrypt'])
+        return await crypto.subtle.deriveKey(deriveParams, runtimeDerivedEmptyPassword, { name: algorithm, length: keyLength }, true, [type])
       } catch {
-        cryptoKey = await crypto.subtle.importKey('jwk', derivedEmptyPasswordKey, { name: 'AES-GCM' }, true, ['encrypt'])
+        return await crypto.subtle.importKey('jwk', derivedEmptyPasswordKey, { name: 'AES-GCM' }, true, [type])
       }
     } else {
-      // Derive a key using PBKDF2.
+      // Derive the key using PBKDF2
       const deriveParams = { name: 'PBKDF2', salt, iterations, hash: { name: digest } }
       const rawKey = await crypto.subtle.importKey('raw', password, { name: 'PBKDF2' }, false, ['deriveKey'])
-      cryptoKey = await crypto.subtle.deriveKey(deriveParams, rawKey, { name: algorithm, length: keyLength }, true, ['encrypt'])
+      return await crypto.subtle.deriveKey(deriveParams, rawKey, { name: algorithm, length: keyLength }, true, [type])
     }
-    // Encrypt the string.
-    const ciphertext = await crypto.subtle.encrypt(aesGcm, cryptoKey, data)
+  }
+
+  /**
+   * Uses the provided password to derive a pbkdf2 key. The key
+   * will then be used to encrypt the data.
+   */
+  const encrypt = async (data, password, count = 0) => {
+    if ((!encryptionKey || !nonce || !salt || !aesGcm) || (count !== 0 && count % ivInterval === 0)) {
+      // Derive a new encryption key
+      if (typeof password === 'string') {
+        password = fromString(password)
+      }
+      encryptionKey = await deriveEncryptionKey(password)
+    }
+    // Encrypt the data
+    const ciphertext = await crypto.subtle.encrypt(aesGcm, encryptionKey, data)
     return concat([salt, aesGcm.iv, new Uint8Array(ciphertext)])
   }
+
   /**
-     * Uses the provided password to derive a pbkdf2 key. The key
-     * will then be used to decrypt the data. The options used to create
-     * this decryption cipher must be the same as those used to create
-     * the encryption cipher.
-     */
-  async function decrypt (data, password) {
+   * Uses the provided password to derive a pbkdf2 key. The key
+   * will then be used to decrypt the data. The options used to create
+   * this decryption cipher must be the same as those used to create
+   * the encryption cipher.
+   */
+  const decrypt = async (data, password) => {
     const salt = data.subarray(0, saltLength)
     const nonce = data.subarray(saltLength, saltLength + nonceLength)
     const ciphertext = data.subarray(saltLength + nonceLength)
     const aesGcm = { name: algorithm, iv: nonce }
-    if (typeof password === 'string') {
-      password = fromString(password)
-    }
-    let cryptoKey
-    if (password.length === 0) {
-      try {
-        const deriveParams = { name: 'PBKDF2', salt, iterations, hash: { name: digest } }
-        const runtimeDerivedEmptyPassword = await crypto.subtle.importKey('raw', password, { name: 'PBKDF2' }, false, ['deriveKey'])
-        cryptoKey = await crypto.subtle.deriveKey(deriveParams, runtimeDerivedEmptyPassword, { name: algorithm, length: keyLength }, true, ['decrypt'])
-      } catch {
-        cryptoKey = await crypto.subtle.importKey('jwk', derivedEmptyPasswordKey, { name: 'AES-GCM' }, true, ['decrypt'])
+    if (!decryptionKey || nonce.toString() !== decryptionNonce?.toString()) {
+      // The nonce is different than our cached one, derive the decryption key
+      if (typeof password === 'string') {
+        password = fromString(password)
       }
-    } else {
-      // Derive the key using PBKDF2.
-      const deriveParams = { name: 'PBKDF2', salt, iterations, hash: { name: digest } }
-      const rawKey = await crypto.subtle.importKey('raw', password, { name: 'PBKDF2' }, false, ['deriveKey'])
-      cryptoKey = await crypto.subtle.deriveKey(deriveParams, rawKey, { name: algorithm, length: keyLength }, true, ['decrypt'])
+      decryptionKey = await deriveDecryptionKey(password, salt)
+      decryptionNonce = nonce
     }
-    // Decrypt the string.
-    const plaintext = await crypto.subtle.decrypt(aesGcm, cryptoKey, ciphertext)
+    // Decrypt the data
+    const plaintext = await crypto.subtle.decrypt(aesGcm, decryptionKey, ciphertext)
     return new Uint8Array(plaintext)
   }
-  const cipher = {
+
+  return {
     encrypt,
-    decrypt
+    decrypt,
+    ivInterval
   }
-  return cipher
 }
