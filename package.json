@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "standard --env=mocha",
     "lint:fix": "standard --fix",
-    "test": "mocha"
+    "test": "mocha --config test/.mocharc.json"
   },
   "author": "OrbitDB",
   "license": "MIT",
