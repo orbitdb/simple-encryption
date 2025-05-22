@@ -40,7 +40,7 @@
   "devDependencies": {
     "@chainsafe/libp2p-gossipsub": "^14.1.1",
     "@multiformats/multiaddr-matcher": "^1.7.2",
-    "@orbitdb/core": "github:orbitdb/orbitdb#feat/encryption",
+    "@orbitdb/core": "github:orbitdb/orbitdb#feat/encryption-2",
     "blockstore-level": "^2.0.1",
     "helia": "^5.4.1",
     "mocha": "^11.4.0",
