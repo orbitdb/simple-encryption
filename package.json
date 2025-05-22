@@ -7,7 +7,10 @@
   "scripts": {
     "lint": "standard --env=mocha",
     "lint:fix": "standard --fix",
-    "test": "mocha --config test/.mocharc.json"
+    "test": "mocha --config test/.mocharc.json",
+    "test:browser": "npm run build:tests && ./node_modules/.bin/playwright-test test/browser/bundle.js --runner mocha",
+    "build:tests": "rm -f test/browser/bundle.js* && webpack --config ./conf/webpack.tests.config.js",
+    "webrtc": "node ./test/utils/relay.js"
   },
   "author": "OrbitDB",
   "license": "MIT",
@@ -33,7 +36,7 @@
     "env": [
       "mocha"
     ]
-  },  
+  },
   "devDependencies": {
     "@chainsafe/libp2p-gossipsub": "^14.1.1",
     "@multiformats/multiaddr-matcher": "^1.7.2",
@@ -41,8 +44,11 @@
     "blockstore-level": "^2.0.1",
     "helia": "^5.4.1",
     "mocha": "^11.4.0",
+    "playwright-test": "^14.1.9",
     "rimraf": "^6.0.1",
-    "standard": "^17.1.2"
+    "standard": "^17.1.2",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
     "multiformats": "^13.3.6"

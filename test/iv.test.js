@@ -2,6 +2,7 @@ import { strictEqual, notDeepStrictEqual } from 'assert'
 import SimpleEncryption from '../src/index.js'
 
 describe('Initialization Vector', function () {
+  this.timeout(30000)
   it('generates new salt and nonce at specified intervals', async function () {
     const encryption = await SimpleEncryption({ password: 'hello' })
 
