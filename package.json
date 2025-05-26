@@ -12,8 +12,7 @@
     "test:browser": "npm run build:tests && ./node_modules/.bin/playwright-test test/browser/bundle.js --runner mocha",
     "build:tests": "rm -f test/browser/bundle.js* && webpack --config ./conf/webpack.tests.config.js",
     "webrtc": "node ./test/utils/relay.js",
-    "webrtc:background": "node ./test/utils/relay.js &",
-    "prepublishOnly": "npm run build"
+    "webrtc:background": "node ./test/utils/relay.js &"
   },
   "author": "OrbitDB",
   "license": "MIT",
