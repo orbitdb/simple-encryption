@@ -1,6 +1,6 @@
 {
   "name": "@orbitdb/simple-encryption",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple password encryption module that encrypts data using AES-GCM PBKDF2.",
   "type": "module",
   "main": "src/index.js",
@@ -12,7 +12,8 @@
     "test:browser": "npm run build:tests && ./node_modules/.bin/playwright-test test/browser/bundle.js --runner mocha",
     "build:tests": "rm -f test/browser/bundle.js* && webpack --config ./conf/webpack.tests.config.js",
     "webrtc": "node ./test/utils/relay.js",
-    "webrtc:background": "node ./test/utils/relay.js &"
+    "webrtc:background": "node ./test/utils/relay.js &",
+    "prepublishOnly": "npm run build"
   },
   "author": "OrbitDB",
   "license": "MIT",
